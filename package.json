@@ -1,0 +1,29 @@
+{
+  "name": "gitlab-export",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "build": "esbuild \"src/*.ts\" \"src/**/*.ts\" --bundle --outdir=dist --format=iife && cp manifest.json dist/ && rsync -a --exclude=\"*.ts\" static/ dist/ && cp -r icons/ dist/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lezeraide/gitlab-export.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/lezeraide/gitlab-export/issues"
+  },
+  "homepage": "https://github.com/lezeraide/gitlab-export#readme",
+  "devDependencies": {
+    "@types/webextension-polyfill": "^0.12.6",
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "webextension-polyfill": "^0.12.0"
+  }
+}

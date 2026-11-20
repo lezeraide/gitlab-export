@@ -1,0 +1,19 @@
+APIs JS : https://developer.mozilla.org/fr/docs/Mozilla/Add-ons/WebExtensions/API
+
+clipboard : pour mettre du texte dans le presse papier 
+
+find : pour trouver du texte dans une page
+
+
+
+
+div.gl-base-layout : conteneur des deux sections 
+
+
+div.gl-detail-layout-content : la description du ticket
+
+div.gl-detail-layout-sidebar : la barre du côté avec tous les détails
+
+div.gl-detail-layout-widgets : le bloc avec les tickets et les mr liés
+
+div.gl-detail-layout-activity : les commentaires et l'historique
