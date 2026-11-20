@@ -1,8 +1,10 @@
 import browser from "webextension-polyfill";
 import { Fetcher } from "./service/fetcher.js";
 import { Formatter } from "./service/formatter.js";
+import { Writer } from "./service/writer.js";
 
 const formatter = new Formatter();
+const writer = new Writer();
 
 interface PageContext {
     url: string;
@@ -17,27 +19,21 @@ async function getPageContext(): Promise<PageContext> {
     return result as PageContext;
 }
 
-function downloadJson(dataObj: any, filename = "data.json") {
-    // 1. Convert JS object to a formatted JSON string
-    const jsonString = JSON.stringify(dataObj, null, 2);
-
-    // 2. Create a Blob and a temporary Object URL
-    const blob = new Blob([jsonString], { type: "application/json" });
+function downloadJson(json: string, filename = "data.json") {
+    const blob = new Blob([json], { type: "application/json" });
     const url = URL.createObjectURL(blob);
 
-    // 3. Trigger the browser download
     browser.downloads.download({
         url: url,
         filename: filename,
-        saveAs: false // Set to true if you want to prompt the user where to save
+        saveAs: false
     }).then((downloadId) => {
-        console.log("DOWNLOADED");
-        // Clean up memory once the download finishes
+        // Clean memory
         browser.downloads.onChanged.addListener(function onChanged(delta) {
-        if (delta.id === downloadId && delta.state && delta.state.current === "complete") {
-            URL.revokeObjectURL(url);
-            browser.downloads.onChanged.removeListener(onChanged);
-        }
+            if (delta.id === downloadId && delta.state && delta.state.current === "complete") {
+                URL.revokeObjectURL(url);
+                browser.downloads.onChanged.removeListener(onChanged);
+            }
         });
     }).catch((error) => {
         console.error("Download failed:", error);
@@ -64,12 +60,9 @@ async function exportIssue() {
     const issue = await issueResponse.json();
     const formattedIssue = formatter.formatIssue(issue, formattedMergeRequests, formattedNotes);
 
-    console.log(formattedIssue);
+    const issueJson = writer.writeJson(formattedIssue);
 
-    // Example usage:
-    const myData = { user: "dev", timestamp: Date.now(), items: [1, 2, 3] };
-    downloadJson(myData, "export.json");
-
+    downloadJson(issueJson, `issue#${formattedIssue.getIid()}.json`);
 }
 
 document.querySelector("#export-issue")?.addEventListener("click", exportIssue);
